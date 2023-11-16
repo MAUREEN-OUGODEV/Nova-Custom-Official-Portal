@@ -61,7 +61,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>               
           </div>
-          <div className="text-center  mb-16 text-2xl font-bold">No Truck documents available.</div>
+          <div className="text-center  mb-16 text-2xl font-bold"> Truck documents Loading.....</div>
         </div>
       </div>
     );
@@ -104,7 +104,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
             </div>
           </div>
           <h2 className="text-center font-semibold text-nova-amber-600 mb-16 text-3xl">Truck Documents</h2>
-          <div className="grid grid-cols-3   gap-16 ml-16 pr-4">
+          <div className="grid grid-cols-3   gap-16 ml-96 ">
             {displayedDocuments.map((item, index) => (
               <div key={index} className="flex flex-col bg-gray-100 shadow-2xl rounded ">
                 <div className="cursor-pointer justify-center pl-8">

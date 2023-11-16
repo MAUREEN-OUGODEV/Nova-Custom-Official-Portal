@@ -61,7 +61,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>               
           </div>
-          <div className="text-center  mb-16 text-2xl font-bold">No Personal documents available.</div>
+          <div className="text-center  mb-16 text-2xl font-bold">Personal documents Loading....</div>
         </div>
       </div>
     );
