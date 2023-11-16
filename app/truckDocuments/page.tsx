@@ -36,7 +36,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
   };
 
   const confirmVerification = () => {
-    router.push('/truckDocuments');
+    router.push('/cargoDocuments');
   };
 
   if (!truck || truck.length === 0) {
@@ -79,7 +79,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
     if (typeof window !== 'undefined') {
       setVerificationMessage('Have you verified these Truck documents?');
       setShowVerificationMessage(true);
-      router.push('/cargoDocuments');
+     
     }
   };
 
