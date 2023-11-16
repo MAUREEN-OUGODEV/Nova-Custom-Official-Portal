@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import useGetPersonal from '../hooks/personalDocuments';
+import useGetTruck from '../hooks/truckDocuments';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ToggleButton from '../Component/Checkbox';
@@ -10,7 +10,7 @@ import Greeting from '../Component/Greetings';
 
 const PersonalDocuments = ({ driverSlug }: any) => {
   const [slugDriver, setSlugDriver] = useState('');
-  const { personal } = useGetPersonal(Number(slugDriver));
+  const { truck } = useGetTruck(Number(slugDriver));
   const [verificationMessage, setVerificationMessage] = useState('');
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [verifiedDocuments, setVerifiedDocuments] = useState({});
@@ -39,7 +39,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
     router.push('/truckDocuments');
   };
 
-  if (!personal || personal.length === 0) {
+  if (!truck || truck.length === 0) {
     return (
       <div className='flex'>
         <SideBar  />
@@ -61,26 +61,25 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>               
           </div>
-          <div className="text-center  mb-16 text-2xl font-bold">No Personal documents available.</div>
+          <div className="text-center  mb-16 text-2xl font-bold">No Truck documents available.</div>
         </div>
       </div>
     );
   }
 
-  const personalDocs = personal.filter((item) => item.document_type === 'passport');
-  const healthCertificateDocs = personal.filter((item) => item.document_type === 'health_certificate');
-  const drivingLicenseDocs = personal.filter((item) => item.document_type === 'driving_license');
+  const insuranceDocs = truck.filter((item) => item.document_type === 'insurance');
+  const transitDocs = truck.filter((item) => item.document_type === 'transit goods documents');
   
   const displayedDocuments = [
-    ...personalDocs.slice(0, 1),
-    ...healthCertificateDocs.slice(0, 1),
-    ...drivingLicenseDocs.slice(0, 1),
+    ...insuranceDocs.slice(0, 1),
+    ...transitDocs.slice(0, 1),
   ];
 
   const handleVerificationClick = (id) => {
     if (typeof window !== 'undefined') {
-      setVerificationMessage('Have you verified these Personal documents?');
+      setVerificationMessage('Have you verified these Truck documents?');
       setShowVerificationMessage(true);
+      router.push('/cargoDocuments');
     }
   };
 
@@ -104,7 +103,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>
           </div>
-          <h2 className="text-center font-semibold text-nova-amber-600 mb-16 text-3xl">Personal Documents</h2>
+          <h2 className="text-center font-semibold text-nova-amber-600 mb-16 text-3xl">Truck Documents</h2>
           <div className="grid grid-cols-3   gap-16 ml-16 pr-4">
             {displayedDocuments.map((item, index) => (
               <div key={index} className="flex flex-col bg-gray-100 shadow-2xl rounded ">
