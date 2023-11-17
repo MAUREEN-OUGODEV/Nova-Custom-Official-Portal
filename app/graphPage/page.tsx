@@ -109,7 +109,7 @@ function Piechart() {
              </h1>
             </div>
            <div className='text-center ml-72 mt-8'>
-             <img src="/images/profile.png"
+             <img src="/images/custom.jpeg"
               alt="Profile"
                className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
                <Greeting />

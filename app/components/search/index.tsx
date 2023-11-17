@@ -35,12 +35,12 @@ function Search({ drivers, onSearch } : {drivers?:any; onSearch?:any}) {
               Custom <span className='text-amber-600'>Official</span> Portal
              </h1>
             </div>
-           <div className='text-center ml-72 mt-8'>
-             <img src="/images/profile.png"
+            <div className='text-center ml-72 mt-8'>
+             <img src="/images/custom.jpeg"
               alt="Profile"
-               className='lg:w-17 mx-auto mb-4 sm:w-10 sm:mb-2'/>
+               className='lg:w-18 mx-auto mb-4 sm:w-10 sm:mb-2'/>
                <Greeting />
-               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+               <p className='text-lg text-sm text-bold'>Brian Amoti</p>
             </div>
       
     </div>

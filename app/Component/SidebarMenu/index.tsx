@@ -35,7 +35,7 @@ const SideBar = () => {
         <div className="flex items-center justify-center my-20">
           <div className="text-center">
             <img
-              src="/images/Logo.png"
+              src="/images/logoTruck.png"
               alt="Profile"
               className="lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2"
             />

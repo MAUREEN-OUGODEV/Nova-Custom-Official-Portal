@@ -54,12 +54,12 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               </div> 
             </div>
             <div className='text-center ml-72 mt-8'>
-              <img src="/images/profile.png"
-                alt="Profile"
-                className='lg:w-17 mx-auto mb-4 sm:w-10 sm:mb-2'/>
-              <Greeting />
-              <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
-            </div>               
+             <img src="/images/custom.jpeg"
+              alt="Profile"
+               className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
+               <Greeting />
+               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+            </div>         
           </div>
           <div className="text-center  mb-16 text-2xl font-bold">Personal documents Loading....</div>
         </div>
@@ -97,11 +97,11 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               </h1>
             </div>
             <div className='text-center ml-72 mt-8'>
-              <img src="/images/profile.png"
-                alt="Profile"
-                className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
-              <Greeting />
-              <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+             <img src="/images/custom.jpeg"
+              alt="Profile"
+               className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
+               <Greeting />
+               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>
           </div>
           <h2 className="text-center font-semibold text-nova-amber-600 mb-16 text-3xl">Personal Documents</h2>
