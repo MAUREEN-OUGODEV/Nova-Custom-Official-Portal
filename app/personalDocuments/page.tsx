@@ -9,6 +9,7 @@ import SideBar from '../Component/SidebarMenu';
 import Greeting from '../Component/Greetings';
 import { rejected } from '../utilities/utils';
 
+
 const PersonalDocuments = ({ driverSlug }: any) => {
   const [slugDriver, setSlugDriver] = useState('');
   const { personal } = useGetPersonal(Number(slugDriver));
@@ -18,6 +19,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
+
 
   useEffect(() => {
     const storedId = typeof window !== 'undefined' ? window.sessionStorage.getItem('id') : '';
@@ -49,7 +51,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
             await rejected(Number(slugDriver));
     
             
-           
+          router.push('/uploadedDocuments')
           } catch (error) {
             
             console.error('Error during rejection:', error);
