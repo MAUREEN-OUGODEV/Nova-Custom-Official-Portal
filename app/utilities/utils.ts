@@ -89,6 +89,26 @@ export const verification = async (slug: number) => {
     
   }
 };
+export const rejected = async (slug: number) => {
+  const url = `api/rej/${slug}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({status:"Rejected"}),
+    });
+    console.log(response);
+    
+    const result = await response.json();
+    console.log(result);
+    
+    return result;
+  } catch (error: any) {
+    
+  }
+};
 export const docVerification = async (id) => {
   const url = `api/document/${id}`;
 

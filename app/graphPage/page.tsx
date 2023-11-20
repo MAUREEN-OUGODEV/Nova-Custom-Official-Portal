@@ -5,32 +5,33 @@ import SideBar from "../Component/SidebarMenu";
 import Chart from "chart.js/auto";
 import Greeting from "../Component/Greetings";
 
+
+
 function Piechart() {
   const driversData = useGetDrivers();
-  const { countPendingDrivers, countVerifiedDrivers } = driversData.drivers.reduce(
+  const { countPendingDrivers, countVerifiedDrivers, countRejectedDrivers } = driversData.drivers.reduce(
     (countObj, driver) => {
       if (driver.verification_status === "Pending") {
         countObj.countPendingDrivers++;
       } else if (driver.verification_status === "Verified") {
         countObj.countVerifiedDrivers++;
+      } else if (driver.verification_status === "Rejected") {
+        countObj.countRejectedDrivers++;
       }
       return countObj;
     },
-    { countPendingDrivers: 0, countVerifiedDrivers: 0 }
+    { countPendingDrivers: 0, countVerifiedDrivers: 0, countRejectedDrivers: 0 }
   );
-  
-  const countAllDrivers = driversData.drivers.length;
 
- 
-  const allDriversChartRef = useRef(null);
+  const allDriversCount = driversData.drivers.length;
+
   const pendingDriversChartRef = useRef(null);
   const verifiedDriversChartRef = useRef(null);
+  const rejectedDriversChartRef = useRef(null);
 
   useEffect(() => {
-    
     const createOrUpdateDoughnutChart = (chartRef, chartData, count) => {
       if (chartRef.current) {
-        
         if (chartRef.current.chartInstance) {
           chartRef.current.chartInstance.destroy();
         }
@@ -40,8 +41,7 @@ function Piechart() {
           type: "doughnut",
           data: chartData,
           options: {
-            cutout: "70%", 
-            
+            cutout: "70%",
             animation: {
               onComplete: (animation) => {
                 const chartInstance = animation.chart;
@@ -61,78 +61,75 @@ function Piechart() {
       }
     };
 
-    
-    createOrUpdateDoughnutChart(allDriversChartRef, {
-      labels: [],
-      datasets: [
-        {
-          data: [countAllDrivers],
-          backgroundColor: ['rgba(255, 206, 86, 0.8)'],
-    }],
-      },
-     countAllDrivers);
-
-  
     createOrUpdateDoughnutChart(pendingDriversChartRef, {
-      labels: [],
+      labels: ["Pending Drivers"],
       datasets: [
         {
           data: [countPendingDrivers],
-          backgroundColor: ["rgba(54, 162, 235, 0.8)"],
-    }],
-      },
-     countPendingDrivers);
+          backgroundColor: ["rgba(255, 206, 86, 0.8)"],
+        },
+      ],
+    }, countPendingDrivers);
 
-   
     createOrUpdateDoughnutChart(verifiedDriversChartRef, {
-      labels: [],
+      labels: ["Verified Drivers"],
       datasets: [
         {
           data: [countVerifiedDrivers],
-          backgroundColor: ["rgba(255, 87, 51, 0.8)"],
-    }],
-      },
-    countVerifiedDrivers);
-  }, [countAllDrivers, countPendingDrivers, countVerifiedDrivers]);
+          backgroundColor: ["rgba(0, 128, 0, 0.8)"],
+        },
+      ],
+    }, countVerifiedDrivers);
+
+    createOrUpdateDoughnutChart(rejectedDriversChartRef, {
+      labels: ["Rejected Drivers"],
+      datasets: [
+        {
+          data: [countRejectedDrivers],
+          backgroundColor: ["rgba(255, 0, 0, 0.8)"],
+        },
+      ],
+    }, countRejectedDrivers);
+
+  }, [countPendingDrivers, countVerifiedDrivers, countRejectedDrivers]);
 
   return (
     <div className="overflow-y-hidden">
       <div className="flex ">
-      
-        <SideBar  />
-        <div > 
-          
+        <SideBar />
+        <div>
           <div className="flex ml-96">
             <div>
-            <h1 className="font-bold text-center mb-8 mt-8 ml-32 text-5xl">
-              Custom <span className='text-amber-600'>Official</span> Portal
-             </h1>
+              <h1 className="font-bold text-center mb-8 mt-8 ml-32 text-5xl">
+                Custom <span className='text-amber-600'>Official</span> Portal
+              </h1>
             </div>
-           <div className='text-center ml-72 mt-8'>
-             <img src="/images/custom.jpeg"
-              alt="Profile"
-               className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
-               <Greeting />
-               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+            <div className='text-center ml-72 mt-8'>
+              <img src="/images/custom.jpeg"
+                alt="Profile"
+                className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2' />
+              <Greeting />
+              <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>
-      
-    </div>
+          </div>
+          <div className="bg-blue-100  h-30 w-25 ml-32 mr-64 shadow-2xl pl-16 rounded-lg flex">
+            <span className="circle mb-32 pt-16 pl-16 text-center  font-bold text-5xl">Total number of Drivers:</span>
+            <div className="text-center pt-16 pl-8 mb-4 text-5xl font-bold text-amber-600">{allDriversCount}</div>
+          </div>
           <div className="grid grid-cols-3 gap-4 p-4 ml-24 mt-20">
-            <div className="bg-blue-100 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
-            <span className="circle mb-32 text-center ml-24 font-bold text-2xl">All Drivers </span>
-              <canvas ref={allDriversChartRef}></canvas>
-             
+            <div className="bg-blue-200 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
+              <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Pending Drivers </span>
+              <canvas ref={pendingDriversChartRef}></canvas>
             </div>
 
-            <div className="bg-green-100 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
-            <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Pending Drivers </span>
-              <canvas ref={pendingDriversChartRef}></canvas>
-              
-            </div>
-            <div className="bg-yellow-100 p-4 h-200  w-96 ml-4 shadow-2xl rounded-lg">
-            <span className="circle mb-64 text-center ml-24 font-bold text-2xl">Verified Drivers </span>
+            <div className="bg-green-200 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
+              <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Verified Drivers </span>
               <canvas ref={verifiedDriversChartRef}></canvas>
-              
+            </div>
+
+            <div className="bg-red-100 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
+              <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Rejected Drivers </span>
+              <canvas ref={rejectedDriversChartRef}></canvas>
             </div>
           </div>
         </div>
@@ -142,6 +139,9 @@ function Piechart() {
 }
 
 export default Piechart;
+
+
+
 
 
 

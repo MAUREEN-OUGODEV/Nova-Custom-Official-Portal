@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import ToggleButton from '../Component/Checkbox';
 import SideBar from '../Component/SidebarMenu';
 import Greeting from '../Component/Greetings';
+import { rejected } from '../utilities/utils';
 
 const PersonalDocuments = ({ driverSlug }: any) => {
   const [slugDriver, setSlugDriver] = useState('');
@@ -14,7 +15,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
   const [verificationMessage, setVerificationMessage] = useState('');
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [verifiedDocuments, setVerifiedDocuments] = useState({});
-  const [zoomed, setZoomed] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -31,18 +32,51 @@ const PersonalDocuments = ({ driverSlug }: any) => {
   };
 
   const cancelVerification = () => {
+    
+    setShowVerificationMessage(true);
     setVerificationMessage('');
-    setShowVerificationMessage(false);
   };
+ 
+    const handleReject = async () => {
+      const isAnyDocumentNotVerified = displayedDocuments.some((item) => !verifiedDocuments[item.id]);
+    
+      if (isAnyDocumentNotVerified) {
+        const userConfirmed = window.confirm('Are you sure you want to cancel without verifying all documents?');
+        
+        if (userConfirmed) {
+          try {
+            
+            await rejected(Number(slugDriver));
+    
+            
+           
+          } catch (error) {
+            
+            console.error('Error during rejection:', error);
+          }
+        } else {
+         
+        }
+      } else {
+        setShowVerificationMessage(true);
+        setVerificationMessage('');
+      }
+    };
+  const handleVerificationClick = () => {
+    const isAnyDocumentNotVerified = displayedDocuments.some((item) => !verifiedDocuments[item.id]);
 
-  const confirmVerification = () => {
-    router.push('/truckDocuments');
+    if (typeof window !== 'undefined' && isAnyDocumentNotVerified) {
+      setVerificationMessage('There are documents that you have not verified. Do you want to proceed?');
+      setShowVerificationMessage(true);
+    } else {
+      router.push('/truckDocuments');
+    }
   };
 
   if (!personal || personal.length === 0) {
     return (
       <div className='flex'>
-        <SideBar  />
+        <SideBar />
         <div className="grid grid-cols- gap-4 mt-2">
           <div className="flex ml-96">
             <div>
@@ -54,12 +88,14 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               </div> 
             </div>
             <div className='text-center ml-72 mt-8'>
-             <img src="/images/custom.jpeg"
-              alt="Profile"
-               className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
-               <Greeting />
-               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
-            </div>         
+              <img
+                src="/images/custom.jpeg"
+                alt="Profile"
+                className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'
+              />
+              <Greeting />
+              <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+            </div>
           </div>
           <div className="text-center  mb-16 text-2xl font-bold">Personal documents Loading....</div>
         </div>
@@ -77,16 +113,9 @@ const PersonalDocuments = ({ driverSlug }: any) => {
     ...drivingLicenseDocs.slice(0, 1),
   ];
 
-  const handleVerificationClick = (id) => {
-    if (typeof window !== 'undefined') {
-      setVerificationMessage('Have you verified these Personal documents?');
-      setShowVerificationMessage(true);
-    }
-  };
-
   return (
     <div className='flex'>
-      <SideBar/>
+      <SideBar />
       <div>
         <div className="grid grid-cols-2 ml-16 gap-4"></div>
         <div className="grid grid-cols- gap-4 mt-2">
@@ -97,11 +126,13 @@ const PersonalDocuments = ({ driverSlug }: any) => {
               </h1>
             </div>
             <div className='text-center ml-72 mt-8'>
-             <img src="/images/custom.jpeg"
-              alt="Profile"
-               className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'/>
-               <Greeting />
-               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
+              <img
+                src="/images/custom.jpeg"
+                alt="Profile"
+                className='lg:w-20 mx-auto mb-4 sm:w-10 sm:mb-2'
+              />
+              <Greeting />
+              <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>
           </div>
           <h2 className="text-center font-semibold text-nova-amber-600 mb-16 text-3xl">Personal Documents</h2>
@@ -127,6 +158,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
                   <ToggleButton
                     isChecked={verifiedDocuments[item.id] || false}
                     onToggle={() => toggleDocumentVerification(item.id)}
+                    onCancel={cancelVerification}  
                   />
                 </div>
               </div>
@@ -134,42 +166,20 @@ const PersonalDocuments = ({ driverSlug }: any) => {
           </div>
 
           <div className="text-center mt-8 ml-36 mb-16">
-            <a href="/uploadedDocuments">
-              <button className="bg-white text-nova-amber-600 border border-nova-amber-600 py-4 px-24 rounded-lg mx-4">
-                Cancel
-              </button>
-            </a>
+            <button
+              className="bg-white text-nova-amber-600 border border-nova-amber-600 py-4 px-24 rounded-lg mx-4" onClick={handleReject}
+            >
+              Cancel
+            </button>
             <button
               className="bg-nova-amber-600 text-white py-4 px-24 rounded-lg mx-4"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  handleVerificationClick(displayedDocuments[0].id);
-                }
-              }}
+              onClick={handleVerificationClick}
             >
               Verification
             </button>
           </div>
 
-          {showVerificationMessage && (
-            <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-75 z-50">
-              <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-                <p className="text-2xl">{verificationMessage}</p>
-                <button
-                  onClick={cancelVerification}
-                  className="bg-white text-nova-amber-600 border border-nova-amber-600 py-2 px-6 rounded-lg mx-2 mt-4"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmVerification}
-                  className="bg-nova-amber-600 text-white py-2 px-6 rounded-lg mx-2 mt-4"
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          )}
+          
         </div>
       </div>
     </div>
@@ -177,6 +187,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
 }
 
 export default PersonalDocuments;
+
 
 
 

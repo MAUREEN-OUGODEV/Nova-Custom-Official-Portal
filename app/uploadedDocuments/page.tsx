@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useState, useEffect } from "react";
 import useGetDrivers from "../hooks/getDrivers";
 import Link from "next/link";
@@ -8,58 +7,52 @@ import { useRouter } from 'next/navigation';
 import SideBar from "../Component/SidebarMenu";
 
 function Pending() {
-  const driversData = useGetDrivers();
   const [searchQuery, setSearchQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
   const driversPerPage = 10;
-  const [filterType, setFilterType] = useState("All");
+  const [filterType, setFilterType] = useState("Pending"); 
   const router = useRouter();
+
+  
+  const driversData = useGetDrivers();
+
+  useEffect(() => {
+   
+    setFilterType("Pending");
+  }, []);
+
   const handlePageChange = (page) => {
     setActivePage(page);
   };
-
-  // Count the pending, verified, and all drivers
-  const countPendingDrivers = Array.isArray(driversData.drivers)
-    ? driversData.drivers.filter(
-        (driver) => driver.verification_status === "Pending"
-      ).length
-    : 0;
-
-  const countVerifiedDrivers = Array.isArray(driversData.drivers)
-    ? driversData.drivers.filter(
-        (driver) => driver.verification_status === "Verified"
-      ).length
-    : 0;
-
-  const countAllDrivers = Array.isArray(driversData.drivers)
-    ? driversData.drivers.length
-    : 0;
 
   const startIndex = (activePage - 1) * driversPerPage;
   const endIndex = startIndex + driversPerPage;
 
   const filteredDrivers = Array.isArray(driversData.drivers)
-  ? driversData.drivers
-      .filter((driver) => {
-        if (filterType === "All") {
-          return driver.first_name.toLowerCase().includes(searchQuery.toLowerCase());
-        } else if (filterType === "Pending") {
-          return (
-            driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            driver.verification_status === "Pending"
-          );
-        } else if (filterType === "Verified") {
-          return (
-            driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            driver.verification_status === "Verified"
-          );
-        }
-      })
-      .sort((a, b) => b.id - a.id) 
-  : [];
-
-
-
+    ? driversData.drivers
+        .filter((driver) => {
+          if (filterType === "Pending") {
+            return (
+              driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+              driver.verification_status === "Pending"
+            );
+          } else if (filterType === "Verified") {
+            return (
+              driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+              driver.verification_status === "Verified" 
+            )
+          } else if (filterType === "Rejected") {
+            return (
+              driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+              driver.verification_status === "Rejected" 
+             
+            );
+          }
+          // If filterType is not "Pending," "Verified," or "Rejected," return false
+          return false;
+        })
+        .sort((a, b) => b.id - a.id)
+    : [];
 
   const driversToDisplay = filteredDrivers.slice(startIndex, endIndex);
 
@@ -77,7 +70,7 @@ function Pending() {
 
   const handleDriverClick = (item) => {
     if (item.verification_status === "Pending") {
-      if (typeof window) {
+      if (typeof window !== "undefined") {
         window.sessionStorage.setItem('id', `${item.id}`);
         window.location.href = "/personalDocuments";
       }
@@ -97,15 +90,7 @@ function Pending() {
       <div className="flex-1">
         <Search onSearch={handleSearch} />
         <div className="min-h-screen p-8">
-          <div className="grid grid-cols-3 gap-2 mb-4 ml-16">
-            <div
-              className={`filter-option ${filterType === "All" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
-                filterType === "All" ? "text-amber-600" : "text-gray-700"
-              }`}
-              onClick={() => handleFilter("All")}
-            >
-              All
-            </div>
+          <div className="grid grid-cols-4 gap-2 mb-4 ml-64">
             <div
               className={`filter-option ${filterType === "Pending" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
                 filterType === "Pending" ? "text-amber-600" : "text-gray-700"
@@ -122,11 +107,19 @@ function Pending() {
             >
               Verified
             </div>
+            <div
+              className={`filter-option ${filterType === "Rejected" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
+                filterType === "Rejected" ? "text-amber-600" : "text-gray-700"
+              }`}
+              onClick={() => handleFilter("Rejected")}
+            >
+              Rejected
+            </div>
           </div>
           <div className="verification">
             <div className="table w-full ">
               <table className="w-full table-fixed  ml-8">
-                <thead className="text-2xl">
+                <thead className="text-xl">
                   <tr>
                     <th className="border-b p-8 text-left">Name</th>
                     <th className="border-b p-4 text-left">License Number</th>
@@ -137,7 +130,7 @@ function Pending() {
                   {driversToDisplay.map((item) => (
                     <tr key={item.id}>
                       <td className="border-b p-3 text-left">
-                        <p className="cursor-pointer" onClick={() => handleDriverClick(item)}>
+                        <p className="cursor-pointer pl-8" onClick={() => handleDriverClick(item)}>
                           {item.first_name} {item.last_name}
                         </p>
                       </td>
@@ -148,7 +141,9 @@ function Pending() {
                             className={`w-4 h-4 rounded-full mr-2 ${
                               item.verification_status === "Verified"
                                 ? "bg-green-500"
-                                : "bg-red-500"
+                                : item.verification_status === "Rejected"
+                                ? "bg-red-500"
+                                : "bg-yellow-500"
                             }`}
                           ></div>
                           {item.verification_status}
@@ -186,4 +181,8 @@ function Pending() {
 }
 
 export default Pending;
+
+
+
+
 

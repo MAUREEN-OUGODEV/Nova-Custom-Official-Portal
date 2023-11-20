@@ -126,6 +126,7 @@ const PersonalDocuments = ({ driverSlug }: any) => {
                   <ToggleButton
                     isChecked={verifiedDocuments[item.id] || false}
                     onToggle={() => toggleDocumentVerification(item.id)}
+                    onCancel={cancelVerification}  
                   />
                 </div>
               </div>

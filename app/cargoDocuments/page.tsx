@@ -38,13 +38,13 @@ const CargoDocuments = ({ driverSlug }: any) => {
 
   const { cargo } = useGetCargoDocument(Number(slugDriver));
 
-  const handleVerificationClick = async (id) => {
+ const handleVerificationClick = async (id) => {
     if (typeof window !== 'undefined') {
       id = window.sessionStorage.getItem('id');
       const verificationResult = await verification(id);
 
       if (await verificationResult === 'success') {
-        setVerificationMessage('Verification succeeded.');
+         setVerificationMessage('Verification succeeded.');
         setShowVerificationMessage(false);
       } else {
         setVerificationMessage('Verification succeed.');
@@ -146,6 +146,7 @@ const CargoDocuments = ({ driverSlug }: any) => {
                   <ToggleButton
                     isChecked={verifiedDocuments[item.id] || false}
                     onToggle={() => toggleDocumentVerification(item.id)}
+                    onCancel={cancelVerification}  
                   />
                 </div>
               </div>
