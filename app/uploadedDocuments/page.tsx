@@ -9,15 +9,13 @@ import SideBar from "../Component/SidebarMenu";
 function Pending() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
-  const driversPerPage = 10;
+  const driversPerPage = 9;
   const [filterType, setFilterType] = useState("Pending"); 
   const router = useRouter();
 
-  
   const driversData = useGetDrivers();
 
   useEffect(() => {
-   
     setFilterType("Pending");
   }, []);
 
@@ -45,10 +43,13 @@ function Pending() {
             return (
               driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
               driver.verification_status === "Rejected" 
-             
+            );
+          } else if (filterType === "Cleared") {
+            return (
+              driver.first_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+              driver.verification_status === "Cleared" 
             );
           }
-          // If filterType is not "Pending," "Verified," or "Rejected," return false
           return false;
         })
         .sort((a, b) => b.id - a.id)
@@ -63,62 +64,67 @@ function Pending() {
     setActivePage(1);
   };
 
-  const handleFilter = (filter) => {
-    setFilterType(filter);
+  const handleFilterChange = (selectedFilter) => {
+    setFilterType(selectedFilter);
     setActivePage(1);
   };
 
-  const handleDriverClick = (item) => {
-    if (item.verification_status === "Pending") {
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem('id', `${item.id}`);
-        window.location.href = "/personalDocuments";
-      }
-    } else if (item.verification_status === "Verified") {
-      router.push('/approved');
+ const handleDriverClick = (item) => {
+  if (item.verification_status === "Pending") {
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem('id', `${item.id}`);
+      window.location.href = "/personalDocuments";
+    }
+  } else if (item.verification_status === "Verified") {
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem('id', `${item.id}`);
+      window.location.href = "/summary";
+    }
+  } else if (item.verification_status === "Cleared") {
+    if (typeof window !== "undefined") {
+      router.push('/approved')
       setTimeout(() => {
-        router.push('/uploadedDocuments');
+        router.push('/uploadedDocuments')
       }, 3000);
     }
-  };
-
+  }
+};
   return (
     <div className="flex">
-      <div className="">
+      <div className="w-1/4">
         <SideBar />
       </div>
-      <div className="flex-1">
-        <Search onSearch={handleSearch} />
+      <div className="flex-3">
         <div className="min-h-screen p-8">
-          <div className="grid grid-cols-4 gap-2 mb-4 ml-64">
-            <div
-              className={`filter-option ${filterType === "Pending" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
-                filterType === "Pending" ? "text-amber-600" : "text-gray-700"
-              }`}
-              onClick={() => handleFilter("Pending")}
-            >
-              Pending
-            </div>
-            <div
-              className={`filter-option ${filterType === "Verified" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
-                filterType === "Verified" ? "text-amber-600" : "text-gray-700"
-              }`}
-              onClick={() => handleFilter("Verified")}
-            >
-              Verified
-            </div>
-            <div
-              className={`filter-option ${filterType === "Rejected" ? "active" : ""} cursor-pointer font-semibold text-3xl  ${
-                filterType === "Rejected" ? "text-amber-600" : "text-gray-700"
-              }`}
-              onClick={() => handleFilter("Rejected")}
-            >
-              Rejected
+          <Search onSearch={handleSearch} />
+          <div className="flex justify-end mb-4">
+            <div className="ml-4">
+              <label className="text-xl">Filter by:  </label>
+              <select
+  
+                value={filterType}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                className=" p-2 rounded-md  text-xl font-bold text-amber-600 p-2 pl-4" 
+                >
+                <option value="Pending" className={filterType === "Pending" ? "amber-600" : ""}>
+                 Pending
+                </option>
+                <option value="Verified" className={filterType === "Verified" ? "amber-600" : ""}>
+                 Verified
+                  </option>
+                <option value="Rejected" className={filterType === "Rejected" ? "amber-600" : ""}>
+                   Rejected
+                 </option>
+              <option value="Cleared" className={filterType === "Cleared" ? "amber-600" : ""}>
+                 Cleared
+                </option>
+              </select>
+
             </div>
           </div>
           <div className="verification">
-            <div className="table w-full ">
-              <table className="w-full table-fixed  ml-8">
+            <div className="table w-full">
+              <table className="w-full table-fixed ml-8">
                 <thead className="text-xl">
                   <tr>
                     <th className="border-b p-8 text-left">Name</th>
@@ -143,6 +149,8 @@ function Pending() {
                                 ? "bg-green-500"
                                 : item.verification_status === "Rejected"
                                 ? "bg-red-500"
+                                : item.verification_status === "Cleared"
+                                ? "bg-blue-500"
                                 : "bg-yellow-500"
                             }`}
                           ></div>
@@ -181,6 +189,8 @@ function Pending() {
 }
 
 export default Pending;
+
+
 
 
 

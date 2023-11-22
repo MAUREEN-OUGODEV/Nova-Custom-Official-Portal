@@ -9,6 +9,25 @@ export const getDrivers= async()=>{
       return error.message
   }
 };
+export const getSummaryDocuments = async (slug:number) => {
+  const url = `api/sum/${slug}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error('Response not OK:', response.status, response.statusText);
+      return [];
+    }
+    const result = await response.json();
+    console.log('Data received:', result); 
+    console.log(result.personal_documents);
+
+    return result;
+    
+  } catch (error: any) {
+    console.error('Fetch error:', error.message);
+    return [];
+  }
+};
 
 export const getPersonalDocuments = async (slug:number) => {
   const url = `api/personal/${slug}`;
@@ -91,6 +110,54 @@ export const verification = async (slug: number) => {
 };
 export const rejected = async (slug: number) => {
   const url = `api/rej/${slug}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({status:"Rejected"}),
+    });
+    console.log(response);
+    
+    const result = await response.json();
+    console.log(result);
+    
+    return result;
+  } catch (error: any) {
+    
+  }
+};
+export const cleared = async (slug: number) => {
+  const url = `/api/clear/${slug}`; 
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: "Cleared" }),
+    });
+
+    if (!response.ok) {
+      console.error('Response not OK:', response.status, response.statusText);
+      return { success: false, message: `Error: ${response.status} - ${response.statusText}` };
+    }
+
+    const result = await response.json();
+    console.log(result);
+
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('Fetch error:', error.message);
+    return { success: false, message: `Error: ${error.message}` };
+  }
+};
+
+
+
+export const VerificationRejected = async (slug: number) => {
+  const url = `api/verej/${slug}`;
   try {
     const response = await fetch(url, {
       method: 'POST',

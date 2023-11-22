@@ -157,6 +157,8 @@ const PersonalDocuments = ({ driverSlug }: any) => {
                   <p className="leading-loose text-md font-semibold">Reference NO: {item.reference_number}</p>
                   <p className="leading-loose text-md font-semibold">Issue Date: {item.issue_date}</p>
                   <p className="leading-loose text-md font-semibold">Expiry Date: {item.expiry_date}</p>
+                  
+                 
                   <ToggleButton
                     isChecked={verifiedDocuments[item.id] || false}
                     onToggle={() => toggleDocumentVerification(item.id)}

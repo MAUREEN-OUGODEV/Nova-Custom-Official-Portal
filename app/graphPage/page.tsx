@@ -5,11 +5,9 @@ import SideBar from "../Component/SidebarMenu";
 import Chart from "chart.js/auto";
 import Greeting from "../Component/Greetings";
 
-
-
 function Piechart() {
   const driversData = useGetDrivers();
-  const { countPendingDrivers, countVerifiedDrivers, countRejectedDrivers } = driversData.drivers.reduce(
+  const { countPendingDrivers, countVerifiedDrivers, countRejectedDrivers, countClearedDrivers } = driversData.drivers.reduce(
     (countObj, driver) => {
       if (driver.verification_status === "Pending") {
         countObj.countPendingDrivers++;
@@ -17,10 +15,12 @@ function Piechart() {
         countObj.countVerifiedDrivers++;
       } else if (driver.verification_status === "Rejected") {
         countObj.countRejectedDrivers++;
+      } else if (driver.verification_status === "Cleared") {
+        countObj.countClearedDrivers++;
       }
       return countObj;
     },
-    { countPendingDrivers: 0, countVerifiedDrivers: 0, countRejectedDrivers: 0 }
+    { countPendingDrivers: 0, countVerifiedDrivers: 0, countRejectedDrivers: 0, countClearedDrivers: 0 }
   );
 
   const allDriversCount = driversData.drivers.length;
@@ -28,6 +28,7 @@ function Piechart() {
   const pendingDriversChartRef = useRef(null);
   const verifiedDriversChartRef = useRef(null);
   const rejectedDriversChartRef = useRef(null);
+  const clearedDriversChartRef = useRef(null);
 
   useEffect(() => {
     const createOrUpdateDoughnutChart = (chartRef, chartData, count) => {
@@ -91,7 +92,17 @@ function Piechart() {
       ],
     }, countRejectedDrivers);
 
-  }, [countPendingDrivers, countVerifiedDrivers, countRejectedDrivers]);
+    createOrUpdateDoughnutChart(clearedDriversChartRef, {
+      labels: ["Cleared Drivers"],
+      datasets: [
+        {
+          data: [countClearedDrivers],
+          backgroundColor: ["rgba(0, 255, 0, 0.8)"],
+        },
+      ],
+    }, countClearedDrivers);
+
+  }, [countPendingDrivers, countVerifiedDrivers, countRejectedDrivers, countClearedDrivers]);
 
   return (
     <div className="overflow-y-hidden">
@@ -112,11 +123,17 @@ function Piechart() {
               <p className='text-lg sm:text-xl text-bold'>Brian Amoti</p>
             </div>
           </div>
-          <div className="bg-blue-100  h-30 w-25 ml-32 mr-64 shadow-2xl pl-16 rounded-lg flex">
-            <span className="circle mb-32 pt-16 pl-16 text-center  font-bold text-5xl">Total number of Drivers:</span>
-            <div className="text-center pt-16 pl-8 mb-4 text-5xl font-bold text-amber-600">{allDriversCount}</div>
+          <div className="flex flex-wrap ml-32 mt-8">
+          <div className="bg-blue-100 h-30 w-25 ml-4 mr-4 shadow-2xl pl-4 pr-4 rounded-lg mb-4 flex">
+            <span className="circle mb-2 pt-16 pl-16 text-center font-bold text-4xl ">Total number of Drivers:</span>
+            <div className="text-center pt-16 pl-8 pr-8 pb-4 mb-2 text-4xl  font-bold text-amber-600">{allDriversCount}</div>
           </div>
-          <div className="grid grid-cols-3 gap-4 p-4 ml-24 mt-20">
+          <div className="bg-green-100 h-30 w-25 ml-4 mr-4 shadow-2xl pl-4 pr-4 rounded-lg mb-4 flex">
+            <span className="circle mb-2 pt-16 pl-16 pb-16 text-center font-bold text-4xl ">Total Cleared Drivers:</span>
+            <div className="text-center pt-16 pl-8 pb-16 pr-8 mb-2 text-4xl font-bold text-green-600">{countClearedDrivers}</div>
+          </div>
+        </div>
+          <div className="grid grid-cols-3 gap-4 p-4 ml-24 mt-20"> {/* Updated to include the Cleared Drivers chart */}
             <div className="bg-blue-200 p-4 h-150 w-96 ml-4 shadow-2xl rounded-lg">
               <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Pending Drivers </span>
               <canvas ref={pendingDriversChartRef}></canvas>
@@ -131,6 +148,8 @@ function Piechart() {
               <span className="circle mb-32 text-center ml-24 font-bold text-2xl">Rejected Drivers </span>
               <canvas ref={rejectedDriversChartRef}></canvas>
             </div>
+
+           
           </div>
         </div>
       </div>
@@ -139,6 +158,7 @@ function Piechart() {
 }
 
 export default Piechart;
+
 
 
 
