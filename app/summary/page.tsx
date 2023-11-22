@@ -4,7 +4,7 @@ import SideBar from '../Component/SidebarMenu';
 import Greeting from '../Component/Greetings';
 import useGetDocuments from '../hooks/summary';
 import { useRouter } from 'next/navigation'; // Correct the import statement
-import { cleared, VerificationRejected } from '../utilities/utils';
+import { cleared, rejectedVerify} from '../utilities/utils';
 
 const Home = ({ driverSlug }: any) => {
   const [slugDriver, setSlugDriver] = useState('');
@@ -35,7 +35,6 @@ const Home = ({ driverSlug }: any) => {
     ...cargoDocs.slice(0, 1),
   ];
 
-  // Extracting documents for Truck
   const truckDocs = truck.filter((item) => item.document_type === 'transit goods documents');
   const insuranceDocs = truck.filter((item) => item.document_type === 'insurance');
 
@@ -46,8 +45,9 @@ const Home = ({ driverSlug }: any) => {
 
   const handleCancelAction = async () => {
     try {
-      const result = await VerificationRejected(driverSlug);
-      console.log(result); // handle the result as needed
+      const result = await rejectedVerify(Number(window.sessionStorage.getItem('id')));
+      console.log(result); 
+      router.push('/uploadedDocuments')
     } catch (error) {
       console.error('Error rejecting driver:', error.message);
     }
@@ -55,15 +55,16 @@ const Home = ({ driverSlug }: any) => {
   
   const handleVerificationClear = async () => {
     try {
-      const result = await cleared(Number(slugDriver));
-      console.log(result); // handle the result as needed
+      const result = await cleared(Number(window.sessionStorage.getItem('id')));
+      console.log(result); 
+      router.push('/uploadedDocuments')
     } catch (error) {
       console.error('Error clearing verification:', error.message);
     }
   };
   
-  // Placeholder for verifiedDocuments
-  const verifiedDocuments = {}; // Replace with your actual implementation
+  
+  const verifiedDocuments = {}; 
 
   return (
     <div>
@@ -95,29 +96,29 @@ const Home = ({ driverSlug }: any) => {
           </div>
           <div className="flex justify-around p-8 mt-2 ml-16">
             <div className="bg-blue-200 p-4 rounded-md shadow-md">
-              <h1 className="leading-loose text-md font-semibold text-2xl text-center">Personal Documents</h1>
-              <div className="  gap-16 ml-16 pr-4">
+              <h1 className="leading-loose text-md font-semibold text-3xl text-center">Personal Documents</h1>
+              <div className=" " >
                 {displayedDocuments.map((item, index) => (
                   <div key={index} className=" ">
-                    <div className="">
+                    <div className="text-left">
                       <h3 className="font-semibold text-nova-amber-600 leading-10 text-xl">
                         {item.document_type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char) =>
                           char.toUpperCase()
                         )}
                       </h3>
-                      <p className="leading-loose text-md font-semibold">Reference NO: {item.reference_number}</p>
-                      <p className="leading-loose text-md font-semibold">Issue Date: {item.issue_date}</p>
-                      <p className="leading-loose text-md font-semibold">Expiry Date: {item.expiry_date}</p>
+                      <p className="leading-loose text-md ">Reference NO: {item.reference_number}</p>
+                      <p className="leading-loose text-md ">Issue Date: {item.issue_date}</p>
+                      <p className="leading-loose text-md ">Expiry Date: {item.expiry_date}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button>Clear</button>
+              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4  '>Clear</button>
             </div>
 
             <div className="bg-green-200 p-4 rounded-md shadow-md">
-              <h1 className="leading-loose text-md font-semibold text-2xl text-center">Cargo Documents</h1>
-              <div className="  gap-16 ml-16 pr-4">
+              <h1 className="leading-loose text-md font-bold text-3xl text-center">Cargo Documents</h1>
+              <div className="">
                 {cargoDocuments.map((item, index) => (
                   <div key={index} className=" ">
                     <div className="">
@@ -126,36 +127,36 @@ const Home = ({ driverSlug }: any) => {
                           char.toUpperCase()
                         )}
                       </h3>
-                      <p className="leading-loose text-md font-semibold">Reference NO: {item.reference_number}</p>
-                      <p className="leading-loose text-md font-semibold">Type of Cargo: {item.cargo}</p>
-                      <p className="leading-loose text-md font-semibold">Cargo Tonnes: {item.cargo_tones}</p>
+                      <p className="leading-loose text-md ">Reference NO: {item.reference_number}</p>
+                      <p className="leading-loose text-md ">Type of Cargo: {item.cargo}</p>
+                      <p className="leading-loose text-md ">Cargo Tonnes: {item.cargo_tones}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button >Clear</button>
+              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4 '>Clear</button>
             </div>
 
             <div className="bg-yellow-100 p-4 rounded-md shadow-md">
-              <h1 className="leading-loose text-md font-semibold text-2xl text-center">Truck Documents</h1>
-              <div className="   gap-16 ml-16 pr-4">
+              <h1 className="leading-loose text-md font-semibold text-3xl ">Truck Documents</h1>
+              <div className="">
                 {truckDocuments.map((item, index) => (
                   <div key={index} className="">
                     <div className="">
-                      <h3 className="font-semibold text-nova-amber-600 leading-10 text-2xl">
+                      <h3 className="font-semibold text-nova-amber-600  text-2xl">
                         {item.document_type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char) =>
                           char.toUpperCase()
                         )}
                       </h3>
-                      <p className="leading-loose text-md font-semibold">Reference NO: {item.reference_number}</p>
-                      <p className="leading-loose text-md font-semibold">Issue Date: {item.issue_date}</p>
-                      <p className="leading-loose text-md font-semibold">Expiry Date: {item.expiry_date}</p>
+                      <p className="leading-loose text-md ">Reference NO: {item.reference_number}</p>
+                      <p className="leading-loose text-md ">Issue Date: {item.issue_date}</p>
+                      <p className="leading-loose text-md ">Expiry Date: {item.expiry_date}</p>
                       
                     </div>
                   </div>
                 ))}
               </div>
-              <button>Clear</button>
+              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4'>Clear</button>
             </div>
           </div>
           <div className="text-center mt-8 ml-36 mb-16">

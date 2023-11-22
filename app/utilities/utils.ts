@@ -136,7 +136,7 @@ export const cleared = async (slug: number) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ status: "Cleared" }),
+      body: JSON.stringify({ status:"Cleared"}),
     });
 
     if (!response.ok) {
@@ -156,26 +156,32 @@ export const cleared = async (slug: number) => {
 
 
 
-export const VerificationRejected = async (slug: number) => {
-  const url = `api/verej/${slug}`;
+export const rejectedVerify = async (slug: number) => {
+  const url = `/api/verej/${slug}`;
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({status:"Rejected"}),
+      body: JSON.stringify({ status:"Rejected"}),
     });
-    console.log(response);
-    
+
+    if (!response.ok) {
+      console.error('Response not OK:', response.status, response.statusText);
+      return { success: false, message: `Error: ${response.status} - ${response.statusText}` };
+    }
+
     const result = await response.json();
     console.log(result);
-    
-    return result;
+
+    return { success: true, data: result };
   } catch (error: any) {
-    
+    console.error('Fetch error:', error.message);
+    return { success: false, message: `Error: ${error.message}` };
   }
 };
+
 export const docVerification = async (id) => {
   const url = `api/document/${id}`;
 
