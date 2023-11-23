@@ -5,15 +5,46 @@ import Greeting from '../Component/Greetings';
 import useGetDocuments from '../hooks/summary';
 import { useRouter } from 'next/navigation'; // Correct the import statement
 import { cleared, rejectedVerify} from '../utilities/utils';
+import ClearButton from '../Component/Clear';
+
+const ConfirmationModal = ({ isOpen, message, onConfirm, onCancel }) => (
+  <div className={`modal ${isOpen ? 'open' : 'closed'}`}>
+    <div className="modal-content">
+      <p>{message}</p>
+      <button onClick={onConfirm}>Yes</button>
+      <button onClick={onCancel}>No</button>
+    </div>
+  </div>
+);
+
 
 const Home = ({ driverSlug }: any) => {
   const [slugDriver, setSlugDriver] = useState('');
   const [verificationMessage, setVerificationMessage] = useState('');
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
-  const { personal, cargo, truck } = useGetDocuments(Number(slugDriver));;
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(() => () => {});
   const router = useRouter();
+  const { personal, cargo, truck } = useGetDocuments(Number(slugDriver));
+  const [showPersonalVerification, setShowPersonalVerification] = useState(false);
+  const [showCargoVerification, setShowCargoVerification] = useState(false);
+  const [showTruckVerification, setShowTruckVerification] = useState(false);
 
-  // Extracting documents for Personal
+  // Dummy handler function for the ClearButton
+  const handleClearButtonPersonal = () => {
+    
+    setShowPersonalVerification((prevValue) => !prevValue);
+  };
+  const handleClearButtonCargo = () => {
+    
+    setShowCargoVerification((prevValue) => !prevValue);
+  };
+  const handleClearButtonToggle = () => {
+    
+    setShowTruckVerification((prevValue) => !prevValue);
+  };
+
+  
   const personalDocs = personal.filter((item) => item.document_type === 'passport');
   const healthCertificateDocs = personal.filter((item) => item.document_type === 'health_certificate');
   const drivingLicenseDocs = personal.filter((item) => item.document_type === 'driving_license');
@@ -44,27 +75,39 @@ const Home = ({ driverSlug }: any) => {
   ];
 
   const handleCancelAction = async () => {
-    try {
-      const result = await rejectedVerify(Number(window.sessionStorage.getItem('id')));
-      console.log(result); 
-      router.push('/uploadedDocuments')
-    } catch (error) {
-      console.error('Error rejecting driver:', error.message);
-    }
+    setConfirmationAction(async () => {
+      try {
+        const result = await rejectedVerify(Number(window.sessionStorage.getItem('id')));
+        console.log(result);
+        router.push('/uploadedDocuments');
+      } catch (error) {
+        console.error('Error rejecting driver:', error.message);
+      }
+    });
+    setIsConfirmationOpen(true);
   };
-  
+
   const handleVerificationClear = async () => {
-    try {
-      const result = await cleared(Number(window.sessionStorage.getItem('id')));
-      console.log(result); 
-      router.push('/uploadedDocuments')
-    } catch (error) {
-      console.error('Error clearing verification:', error.message);
-    }
+    setConfirmationAction(async () => {
+      try {
+        const result = await cleared(Number(window.sessionStorage.getItem('id')));
+        console.log(result);
+        router.push('/uploadedDocuments');
+      } catch (error) {
+        console.error('Error clearing verification:', error.message);
+      }
+    });
+    setIsConfirmationOpen(true);
   };
-  
-  
-  const verifiedDocuments = {}; 
+
+  const confirmAction = async () => {
+    await confirmationAction();
+    setIsConfirmationOpen(false);
+  };
+
+  const cancelConfirmation = () => {
+    setIsConfirmationOpen(false);
+  };
 
   return (
     <div>
@@ -107,13 +150,11 @@ const Home = ({ driverSlug }: any) => {
                         )}
                       </h3>
                       <p className="leading-loose text-md ">Reference NO: {item.reference_number}</p>
-                      <p className="leading-loose text-md ">Issue Date: {item.issue_date}</p>
-                      <p className="leading-loose text-md ">Expiry Date: {item.expiry_date}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4  '>Clear</button>
+              <ClearButton  isChecked={showPersonalVerification} onToggle={handleClearButtonPersonal} />
             </div>
 
             <div className="bg-green-200 p-4 rounded-md shadow-md">
@@ -134,7 +175,7 @@ const Home = ({ driverSlug }: any) => {
                   </div>
                 ))}
               </div>
-              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4 '>Clear</button>
+              <ClearButton  isChecked={showCargoVerification} onToggle={handleClearButtonCargo} />
             </div>
 
             <div className="bg-yellow-100 p-4 rounded-md shadow-md">
@@ -149,14 +190,13 @@ const Home = ({ driverSlug }: any) => {
                         )}
                       </h3>
                       <p className="leading-loose text-md ">Reference NO: {item.reference_number}</p>
-                      <p className="leading-loose text-md ">Issue Date: {item.issue_date}</p>
-                      <p className="leading-loose text-md ">Expiry Date: {item.expiry_date}</p>
+                      
                       
                     </div>
                   </div>
                 ))}
               </div>
-              <button className='bg-nova-amber-600 text-white py-2 px-16 rounded-lg mx-4 mt-4'>Clear</button>
+              <ClearButton  isChecked={showTruckVerification} onToggle={handleClearButtonToggle} />
             </div>
           </div>
           <div className="text-center mt-8 ml-36 mb-16">
@@ -171,6 +211,8 @@ const Home = ({ driverSlug }: any) => {
             >
               Verification
             </button>
+          </div>
+          <div>
           </div>
         </div>
       </div>
