@@ -209,7 +209,7 @@ const Home = ({ driverSlug }: any) => {
               className="bg-nova-amber-600 text-white py-4 px-24 rounded-lg mx-4"
               onClick={handleVerificationClear}
             >
-              Verification
+              cleared
             </button>
           </div>
           <div>
